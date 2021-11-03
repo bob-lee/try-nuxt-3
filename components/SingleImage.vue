@@ -35,7 +35,7 @@ export default {
   <div
     v-if="url"
     class="single-image"
-    :style="{ backgroundImage: `url(${url}` }"
+    :style="{ backgroundImage: `url(${url}), linear-gradient(to right, white, white)` }"
   >
     <i
       aria-hidden="true"
@@ -55,20 +55,18 @@ export default {
   position: fixed;
   top: 150px;
   left: calc(50% - 150px);
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;;
+  /* two backgrounds - image itself and white background */
+  background-size: contain, contain;
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center;
+  /* below styles taken from https://v3.vuejs.org/guide/optimizations.html#virtual-dom */
+  box-shadow: -5px 18px 40px -12px rgba(0, 0, 0, 0.4);
+  transform: perspective(800px) rotateY(30deg) rotateX(15deg) rotate(-2deg) scaleX(0.95);
 }
 .fa {
   position: absolute;
   top: .2em;
   left: .2em;
   cursor: pointer;
-}
-
-img {
-  position: absolute;
-  top: 0;
-  left: 0;
 }
 </style>
