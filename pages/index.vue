@@ -1,31 +1,26 @@
 <script setup>
 import { ref } from 'vue'
-// import SingleImage from '~~/components/SingleImage.vue'
+
 const { data } = await useAsyncData(
   'hello', 
   () => $fetch('/api/hello')
 )
-const { data: urls } = await useFetch('/api/images/portrait',
+const { data: images } = await useFetch('/api/images/portrait',
   // { pick: [ 'fileName', 'url' ] }
 )
-// const { data: my } = await useFetch('/api/images/portrait')
-// const urls = JSON.parse(urls0)
 
 const hi = computed(() => data.value + '!')
-const count = computed(() => (urls.value && Array.isArray(urls.value)) ? urls.value.length : 0)
+const count = computed(() => (images.value && Array.isArray(images.value)) ? images.value.length : 0)
 const imageToShow = ref('')
-const noActivated = ref(false)
 const name = ref('Bob')
-// const urls
 
 console.log('hello:', hi.value)
 console.log('urls:', count.value)
-// console.log('my:', my.value)
+
 watchEffect(() => console.log('watchEffect:', imageToShow.value))
 watch(imageToShow, (url, prevUrl) => console.log('watch', prevUrl || 'na', '->',  url || 'na'))
 
 function urlClicked(url) {
-  // console.log('urlClicked', url)
   imageToShow.value = url
 }
 </script>
@@ -33,180 +28,23 @@ function urlClicked(url) {
 <template>
   <div>
     <h1>Home {{ data }}</h1>
+
     <p>hello api: {{ hi + ' ' + name }}</p>
-    <pre>urls api: {{ urls[0] }}, {{ count }}</pre>
-    <div v-for="url in urls" :key="url.url">
-      <div @click="urlClicked(url.url)"> {{ url.fileName }}</div>
+
+    <pre>images api: {{ images[0] }}, {{ count }}</pre>
+
+    <div v-for="image in images" :key="image.url">
+      <div @click="urlClicked(image.url)"> {{ image.fileName }}</div>
     </div>
 
     <br>
-    <div id="demo">
-      Push this button to do something you shouldn't be doing:<br />
-
-      <div :class="{ shake: noActivated }">
-        <button @click="noActivated = !noActivated">Click me</button>
-        <span v-if="noActivated">Oh no!</span>
-      </div>
-    </div>
-    <br>
-
-    <table>
-      <tr>
-        <th><code>backface-visibility: visible;</code></th>
-        <th><code>backface-visibility: hidden;</code></th>
-      </tr>
-      <tr>
-        <td>
-          <div class="container">
-            <div class="cube showbf">
-              <div class="face front">1</div>
-              <div class="face back">2</div>
-              <div class="face right">3</div>
-              <div class="face left">4</div>
-              <div class="face top">5</div>
-              <div class="face bottom">6</div>
-            </div>
-          </div>
-          <p>
-            Since all faces are partially transparent,
-            the back faces (2, 4, 5) are visible
-            through the front faces (1, 3, 6).
-          </p>
-        </td>
-        <td>
-          <div class="container">
-            <div class="cube hidebf">
-              <div class="face front">1</div>
-              <div class="face back">2</div>
-              <div class="face right">3</div>
-              <div class="face left">4</div>
-              <div class="face top">5</div>
-              <div class="face bottom">6</div>
-            </div>
-          </div>
-          <p>
-            The three back faces (2, 4, 5) are
-            hidden.
-          </p>
-        </td>
-      </tr>
-    </table>
 
     <input type="text" v-model="name">
+
     <SingleImage :url="imageToShow" @close="imageToShow = ''" />
   </div>
 </template>
 
 <style>
-.shake {
-  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-}
 
-@keyframes shake {
-  10%,
-  90% {
-    transform: translate3d(-1px, 0, 0);
-  }
-
-  20%,
-  80% {
-    transform: translate3d(2px, 0, 0);
-  }
-
-  30%,
-  50%,
-  70% {
-    transform: translate3d(-4px, 0, 0);
-  }
-
-  40%,
-  60% {
-    transform: translate3d(4px, 0, 0);
-  }
-}
-
-/* https://developer.mozilla.org/en-US/docs/Web/CSS/backface-visibility */
-
-/* Classes that will show or hide the
-   three back faces of the "cube" */
-.showbf div {
-  backface-visibility: visible;
-}
-
-.hidebf div {
-  backface-visibility: hidden;
-}
-
-/* Define the container div, the cube div, and a generic face */
-.container {
-  width: 150px;
-  height: 150px;
-  margin: 75px 0 0 75px;
-  border: none;
-}
-
-.cube {
-  width: 100%;
-  height: 100%;
-  perspective: 550px;
-  perspective-origin: 150% 150%;
-  transform-style: preserve-3d;
-}
-
-.face {
-  display: block;
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  border: none;
-  line-height: 100px;
-  font-family: sans-serif;
-  font-size: 60px;
-  color: white;
-  text-align: center;
-}
-
-/* Define each face based on direction */
-.front {
-  background: rgba(0, 0, 0, 0.3);
-  transform: translateZ(50px);
-}
-
-.back {
-  background: rgba(0, 255, 0, 1);
-  color: black;
-  transform: rotateY(180deg) translateZ(50px);
-}
-
-.right {
-  background: rgba(196, 0, 0, 0.7);
-  transform: rotateY(90deg) translateZ(50px);
-}
-
-.left {
-  background: rgba(0, 0, 196, 0.7);
-  transform: rotateY(-90deg) translateZ(50px);
-}
-
-.top {
-  background: rgba(196, 196, 0, 0.7);
-  transform: rotateX(90deg) translateZ(50px);
-}
-
-.bottom {
-  background: rgba(196, 0, 196, 0.7);
-  transform: rotateX(-90deg) translateZ(50px);
-}
-
-/* Make the table a little nicer */
-th, p, td {
-  background-color: #EEEEEE;
-  margin: 0px;
-  padding: 6px;
-  font-family: sans-serif;
-  text-align: left;
-}
 </style>
